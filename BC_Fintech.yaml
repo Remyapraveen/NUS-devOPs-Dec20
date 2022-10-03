@@ -1,0 +1,860 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: Finance
+  description: The Finance API
+  tags:
+    - store
+    - rest
+  links:
+    - url: https://github.com/swagger-api/swagger-Fintech
+      title: GitHub Repo
+      icon: github
+    - url: https://github.com/Remyapraveen/NUS-devOPs-Dec20/blob/main/FT_api.yaml
+      title: API Spec
+      icon: code
+spec:
+  type: openapi
+  lifecycle: experimental
+  owner: BlueConnector_Fintech
+  definition: |    
+    
+    openapi: 3.0.1
+    info:
+      title: API Banking - Account Services
+      description: "**API Banking - Account Services**\r\n\r\nProvides account information, balances and information about transactions. It allows to retrieve all available data for customer's authorised account services, such as basic account details, account balances for single or multiple accounts and transaction summary."
+      termsOfService: https://www.ft.com/s2b/legalnotice/
+      contact:
+        name: API Banking Support Team
+        url: https://www.blueconnector.co
+        email: api.query@ft.com
+      license:
+        name: Company Licence
+        url: http://www.ft.com/licenses/LICENSE-2.0.html
+      version: 1.0.0
+    servers:
+      - url: https://api.financialtreasury.com/openapi
+
+    tags:
+      - name: Account Services
+        description: Account Services APIs provide account information, balances and information about transactions. It allows to retrieve all available data for customer's authorised account services, such as basic account details, account balances for single or multiple accounts and transaction summary.
+        x-subcategory: Accounts Inquiry
+    paths:
+      '/accounts/v2/list':
+        get:
+          tags:
+            - Account Services
+          x_api_category_tags: ["Financial Institutions"]
+          summary: List of Accounts - Details
+          description: The List of Accounts API provides an ability to retrieve a list of available bank accounts which client is authorized to access(no balance information)
+          operationId: list-accounts
+          parameters: []
+          responses:
+            200:
+              description: Success with data
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/OpenApiAccounts'
+                  example: |-
+                    [
+                      {
+                        "id": "303130313330313034393A5347443A",
+                        "label": "XXXX",
+                        "number": "0101301049",
+                        "owners": [
+                          {
+                            "id": "",
+                            "provider": "FINANCIAL TREASURY BK",
+                            "display_name": "1277 -sname"
+                          }
+                        ],
+                        "type": "CACC",
+                        "swiftBic": "FTBLSGSGXXX",
+                        "bankId": "FINANCIAL TREASURY BK",
+                        "currency": "SGD",
+                        "groupId": "APINTST2",
+                        "country": "SG",
+                        "iban": ""
+                      },
+                      {
+                        "id": "303130303034323430363A5347443A",
+                        "label": "SHELL INDIA MARKETS PVT LTD",
+                        "number": "0100042406",
+                        "owners": [
+                          {
+                            "id": "",
+                            "provider": "FINANCIAL TREASURY BK",
+                            "display_name": "15655 -sname"
+                          }
+                        ],
+                        "type": "CACC",
+                        "swiftBic": "FTBLINBBXXX",
+                        "bankId": "FINANCIAL TREASURY BK",
+                        "currency": "SGD",
+                        "groupId": "APINTST2",
+                        "country": "IN",
+                        "iban": ""
+                      }
+                    ]
+            201:
+              description: Success. Data created
+            202:
+              description: Success. Data accepted
+            204:
+              description: Success. No data returned
+            400:
+              description: Invalid request. Missing or invalid data
+            401:
+              description: Access token has expired. Please refresh the token
+            404:
+              description: Invalid Path
+            429:
+              description: Default return code for health status, indicating a warning
+            500:
+              description: Internal server error. This indicates error on the webserver hosting the API
+            503:
+              description: Microservice dependency is down or undergoing maintenance. Try again later
+          x-markets: HK,CN,TW,SG,MY,TH,PH,ID,VN,IN,BD,LK,NP,AE,PK,BH,JO,NG,ZA,KE,UG,TZ,CM,GH,ZM,ZW,QA,SL
+
+      '/accounts/v2/{accountId}/{asOf}':
+        get:
+          tags:
+            - Account Services
+          x_api_category_tags: ["Financial Institutions"]
+          summary: Account Detail & Balance (as-of)
+          description: The Account Details & Balance API upon successful user authentication and entitlement checks will return the various types of “Account Balances” applicable for the specified Account Number. The as-of date can be any historical date, however if it is non-working day then a 404-not found response will be returned.
+          operationId: account-details-asof
+          parameters:
+            - name: accountId
+              in: path
+              description: Account Number for which account details are requested
+              required: true
+              schema:
+                type: string
+            - name: asOf
+              in: path
+              description: Date for which account details are requested
+              required: true
+              schema:
+                type: string
+          responses:
+            200:
+              description: Success with data
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/OpenApiAccount'
+                  example: |-
+                    [
+                      {
+                        "id": "303137343039303132393A5553443A",
+                        "label": "XXXX",
+                        "number": "0154090129",
+                        "owners": [
+                          {
+                            "id": "",
+                            "provider": "FINANCIAL TREASURY BK",
+                            "display_name": "SG Customer1"
+                          }
+                        ],
+                        "type": "CACC",
+                        "balance":
+                          {
+                            "currency": "HKD",
+                            "asOf": "2000-07-03",
+                            "amount": 100.31,
+                            "opening": 0.00,
+                            "closing": 10.31,
+                            "openingLedger": 10031.31,
+                            "closingLedger": 10031.31
+                          },
+                        "iban": "",
+                        "swiftBic": "FTBLHKHHXXX",
+                        "bankId": "FINANCIAL TREASURY BK",
+                        "currency": "HKD",
+                        "groupId": "UAASTST1",
+                        "country": "HK"
+                      }
+                    ]
+            201:
+              description: Success. Data created
+            202:
+              description: Success. Data accepted
+            204:
+              description: Success. No data returned
+            400:
+              description: Invalid request. Missing or invalid data
+            401:
+              description: Access token has expired. Please refresh the token
+            404:
+              description: No balances for account id / as-of date combination
+            429:
+              description: Default return code for health status, indicating a warning
+            500:
+              description: Internal server error. This indicates error on the webserver hosting the API
+            503:
+              description: Microservice dependency is down or undergoing maintenance. Try again later
+          x-markets: HK,CN,TW,SG,MY,TH,PH,ID,VN,IN,BD,LK,NP,AE,PK,BH,JO,NG,ZA,KE,UG,TZ,CM,GH,ZM,ZW,QA,SL
+      '/accounts/v2/{accountId}':
+        get:
+          tags:
+            - Account Services
+          x_api_category_tags: ["Financial Institutions"]
+          summary: Account Details & Balance
+          description: The Account Details & Balance API upon successful user authentication and entitlement checks will return the Account details and balances applicable for the specified Account Number for the given date.
+          operationId: account-details
+          parameters:
+            - name: accountId
+              in: path
+              description: Account Number for which account details are requested
+              required: true
+              schema:
+                type: string
+          responses:
+            200:
+              description: Success with data
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/OpenApiAccount'
+                  example: |-
+                    [
+                        {
+                            "id": "32323130353030343531373A494E523A",
+                            "label": "XXX",
+                            "number": "22105004517",
+                            "owners": [
+                                {
+                                    "id": "",
+                                    "provider": "FINANCIAL TREASURY BK",
+                                    "display_name": "bo name"
+                                }
+                            ],
+                            "type": "CACC",
+                            "balance": {
+                                "currency": "INR",
+                                "asOf": "2021-08-31",
+                                "amount": -90045797.00,
+                                "opening": 102839.09,
+                                "closing": -130076199.00,
+                                "openingLedger": 466950.09,
+                                "closingLedger": -99995797.00
+                            },
+                            "iban": "",
+                            "swiftBic": "FTBLIN20",
+                            "bankId": "FINANCIAL TREASURY BK",
+                            "currency": "INR",
+                            "groupId": "INTEST1",
+                            "country": "IN"
+                        }
+                    ]
+
+            201:
+              description: Success. Data created
+            202:
+              description: Success. Data accepted
+            204:
+              description: Success. No data returned
+            400:
+              description: Invalid request. Missing or invalid data
+            401:
+              description: Access token has expired. Please refresh the token
+            404:
+              description: No balances for account id / as-of date combination
+            429:
+              description: Default return code for health status, indicating a warning
+            500:
+              description: Internal server error. This indicates error on the webserver hosting the API
+            503:
+              description: Microservice dependency is down or undergoing maintenance. Try again later
+          x-markets: HK,CN,TW,SG,MY,TH,PH,ID,VN,IN,BD,LK,NP,AE,PK,BH,JO,NG,ZA,KE,UG,TZ,CM,GH,ZM,ZW,GB,US,QA,SL
+
+      '/accounts/v2/query':
+        post:
+          tags:
+            - Account Services
+          x_api_category_tags: ["Financial Institutions"]
+          summary: Account Detail & Balance Query
+          description: The Account Balance Query API upon successful user authentication and entitlement checks will return the Account details and balances for the multiple specified Account Numbers.
+          operationId: accounts-details
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/OpenApiAccountIdList'
+            required: false
+          responses:
+            200:
+              description: Success with data
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/OpenApiAccount'
+                  example: |-
+                    [
+                        {
+                            "id": "524E4439393132323536353030313A564E443A",
+                            "label": "1225xxxxx",
+                            "number": "VND99122565001",
+                            "owners": [
+                                {
+                                    "id": "10984652",
+                                    "provider": "FINANCIAL TREASURY BK",
+                                    "display_name": "1627xxxxx"
+                                }
+                            ],
+                            "type": "CACC",
+                            "balance": {
+                                "currency": "VND",
+                                "asOf": "2020-02-22",
+                                "amount": 2000.00,
+                                "opening": 0.00,
+                                "closing": 100.00,
+                                "openingLedger": 12345.00,
+                                "closingLedger": 12345.00
+                            },
+                            "iban": "",
+                            "swiftBic": "FTBLVNVXXXX",
+                            "bankId": "FINANCIAL TREASURY BK",
+                            "currency": "VND",
+                            "groupId": "INTEST1",
+                            "country": "VN"
+                        }
+                    ]
+            201:
+              description: Success. Data created
+            202:
+              description: Success. Data accepted
+            204:
+              description: Success. No data returned
+            400:
+              description: Invalid request. Missing or invalid data
+            401:
+              description: Access token has expired. Please refresh the token
+            404:
+              description: No balances for account id / as-of date combination
+            429:
+              description: Default return code for health status, indicating a warning
+            500:
+              description: Internal server error. This indicates error on the webserver hosting the API
+            503:
+              description: Microservice dependency is down or undergoing maintenance. Try again later
+          x-markets: HK,CN,TW,SG,MY,TH,PH,ID,VN,IN,BD,LK,NP,AE,PK,BH,JO,NG,ZA,KE,UG,TZ,CM,GH,ZM,ZW,QA,SL
+          x-codegen-request-body-name: body
+
+      '/accounts/v2/{accountId}/{currency}/{asOf}':
+        get:
+          tags:
+            - Account Services
+          summary: Account Detail & Balance by currency
+          description: The Account Detail & Balance by currency API upon successful user authentication and entitlement checks will return the various types of “Account Balances” applicable for the specified Account Number and currency.
+          operationId: account-currency
+          parameters:
+            - name: accountId
+              in: path
+              description: Account Number for which account balance is requested
+              required: true
+              schema:
+                type: string
+            - name: currency
+              in: path
+              description: ISO Currency Code of the account for which the balance is requested
+              required: true
+              schema:
+                type: string
+            - name: asOf
+              in: path
+              description: Date for which account details are requested
+              required: true
+              schema:
+                type: string
+          responses:
+            200:
+              description: Success with data
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/OpenApiAccount'
+                  example: |-
+                    [
+                        {
+                            "id": "34313130393239313130353A484B443A",
+                            "label": "API QA HK HOGAN Balance",
+                            "number": "41109291105",
+                            "owners": [
+                                {
+                                    "id": "",
+                                    "provider": "FINANCIAL TREASURY BK",
+                                    "display_name": "API QA HK Company"
+                                }
+                            ],
+                            "type": "CACC",
+                            "balance": {
+                                "currency": "HKD",
+                                "asOf": "2000-08-02",
+                                "amount": 10031.31,
+                                "opening": 0.00,
+                                "closing": 10031.31,
+                                "openingLedger": 100.31,
+                                "closingLedger": 100.31
+                            },
+                            "iban": "",
+                            "swiftBic": "FTBLHKHHXXX",
+                            "bankId": "FINANCIAL TREASURY BK",
+                            "currency": "HKD",
+                            "groupId": "UAASTST1",
+                            "country": "HK"
+                        }
+                    ]
+
+            201:
+              description: Success. Data created
+            202:
+              description: Success. Data accepted
+            204:
+              description: Success. No data returned
+            400:
+              description: Invalid request. Missing or invalid data
+            401:
+              description: Access token has expired. Please refresh the token
+            404:
+              description: Invalid Path
+            429:
+              description: Default return code for health status, indicating a warning
+            500:
+              description: Internal server error. This indicates error on the webserver hosting the API
+            503:
+              description: Microservice dependency is down or undergoing maintenance. Try again later
+          x-markets: HK,CN,TW,SG,MY,TH,PH,ID,VN,IN,BD,LK,NP,AE,PK,BH,JO,NG,ZA,KE,UG,TZ,CM,GH,ZM,ZW,QA,SL
+
+      '/accounts/v2/{accountId}/{bankId}/{currency}/statement':
+        get:
+          tags:
+            - Account Services
+          x_api_category_tags: ["Financial Institutions"]
+          summary: Account Statement
+          description: The Account Statement API will return paginated view of account transactions. Statement can be requested for maximum 90 days in the past.
+          operationId: account-statement
+          parameters:
+            - name: accountId
+              in: path
+              description: Account Number for which transaction history is requested
+              required: true
+              schema:
+                type: string
+            - name: bankId
+              in: path
+              description: Bank BIC Code of the account for which transaction history is requested
+              required: true
+              schema:
+                type: string
+            - name: currency
+              in: path
+              description: ISO Currency Code of the account for which the transaction history is requested
+              required: true
+              schema:
+                type: string
+            - name: page
+              in: query
+              description: The Page represents a number of pages that will be returned in case request supports pagination. Page number is defaulted to 1
+              required: false
+              schema:
+                type: integer
+                format: int32
+            - name: size
+              in: query
+              description: The Size is a number of records which will be returned per page in case request supports pagination. Size is defaulted to 10
+              required: false
+              schema:
+                type: integer
+                format: int32
+            - name: startDate
+              in: query
+              description: Start date for information, as in this case for transaction history, is applicable for time based requests. It is defaulted to current date -90.
+              required: false
+              schema:
+                type: string
+            - name: endDate
+              in: query
+              description: End date for information, as in this case for transaction history, is applicable for time based requests. It is defaulted to current date.
+              required: false
+              schema:
+                type: string
+          responses:
+            200:
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OpenApiCreditDebitAdvice'
+                  example: |-
+                    [
+                        {
+                            "accountIdentifier": {
+                                "accountId": "0786435917",
+                                "currencyCode": {
+                                    "isoCode": "SGD"
+                                },
+                                "bankCode": "FTBLSG22XXX"
+                            },
+                            "eventDate": "2021-06-08",
+                            "transactionIdentifier": {
+                                "type": "Other",
+                                "identifier": ""
+                            },
+                            "adviceType": "Credit",
+                            "valueDate": "2000-01-08",
+                            "virtualAccountId": "",
+                            "transactionCode": "AG2BT201 12700073sampleche",
+                            "baiCode": "",
+                            "transactionDescription": "AG2BT201 12700073sampleche  787 STS ACH converted BT - Credit customer/S",
+                            "transactionFreeText": [],
+                            "transactionExtendedFreeText": [],
+                            "transactionMultiLingualFreeText": [],
+                            "transactionAmount": {
+                                "currencyCode": "SGD",
+                                "amount": 3E+3
+                            },
+                            "clientIdentifier": {
+                                "type": "Other",
+                                "identifier": ""
+                            },
+                            "externalIdentifier": {
+                                "type": "Other",
+                                "identifier": ""
+                            },
+                            "timestamp": "2021-08-31T06:52:59.541Z"
+                        },
+                        {
+                            "accountIdentifier": {
+                                "accountId": "0101443617",
+                                "currencyCode": {
+                                    "isoCode": "SGD"
+                                },
+                                "bankCode": "FTBLSG22XXX"
+                            },
+                            "eventDate": "2021-06-08",
+                            "transactionIdentifier": {
+                                "type": "Other",
+                                "identifier": ""
+                            },
+                            "adviceType": "Credit",
+                            "valueDate": "2021-06-08",
+                            "virtualAccountId": "",
+                            "transactionCode": "AG2BT20112700073samplecheck12352435182931625",
+                            "baiCode": "",
+                            "transactionDescription": "AG2BT20112700073samplecheck12352435182931625  FC1 STS ACH converted BT - Credit customer/S",
+                            "transactionFreeText": [],
+                            "transactionExtendedFreeText": [],
+                            "transactionMultiLingualFreeText": [],
+                            "transactionAmount": {
+                                "currencyCode": "SGD",
+                                "amount": 3001
+                            },
+                            "clientIdentifier": {
+                                "type": "Other",
+                                "identifier": ""
+                            },
+                            "externalIdentifier": {
+                                "type": "Other",
+                                "identifier": ""
+                            },
+                            "timestamp": "2021-08-31T06:52:59.541Z"
+                        }
+                    ]
+            400:
+              description: Bad request. Data is incorrect
+            403:
+              description: Forbidden if cert is not valid/token is expired or doesn't match certificate
+            404:
+              description: Resource is not found
+            500:
+              description: Internal server error. This indicates error on the webserver hosting the API
+            503:
+              description: Microservice dependency is down or undergoing maintenance. Try again later
+          x-markets: HK,CN,TW,SG,MY,TH,PH,ID,VN,IN,BD,LK,NP,AE,PK,BH,JO,NG,ZA,KE,UG,TZ,CM,GH,ZM,ZW,QA,US,SL
+
+    components:
+      schemas:
+        OpenApiAccount:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 01111111111111A111
+              description: Unique Identification Number of the request for tracking purpose
+            label:
+              type: string
+              example: XXX
+              description: Label
+            number:
+              type: string
+              example: 012345678
+              description: Account Number for which the balance and transaction information being returned
+              minLength: 0
+              maxLength: 34
+            owners:
+              type: array
+              description: Owners Details
+              items:
+                $ref: '#/components/schemas/OpenApiAccountOwner'
+            type:
+              type: string
+              example: CACC
+              description: Type of the Account
+            balance:
+              description: Balance Details of the Account
+              $ref: '#/components/schemas/OpenApiAccountBalance'
+            iban:
+              type: string
+              description: International Bank Account Number
+              minLength: 0
+              maxLength: 34
+            swiftBic:
+              type: string
+              example: FTBLSGSGXXX
+              description: SWIFT BIC of the Financial Institution
+              minLength: 0
+              maxLength: 11
+            bankId:
+              type: string
+              example: FINANCIAL TREASURY BK
+              description: Bank BIC Code for which transaction history is requested
+            currency:
+              type: string
+              description: ISO Currency Code of the account
+              minLength: 0
+              maxLength: 3
+            groupId:
+              type: string
+              example: APINTST2
+              description: Internal SCB Identifier known as account ID
+              minLength: 0
+              maxLength: 10
+            country:
+              type: string
+              example: SG
+              description: Country of the account
+              minLength: 0
+              maxLength: 2
+        OpenApiAccountBalance:
+          type: object
+          properties:
+            currency:
+              type: string
+              description: Currency of the Account
+            asOf:
+              type: string
+              format: date
+              description: Date of the response
+            amount:
+              type: number
+              description: Available Balance for the account
+            opening:
+              type: number
+              description: Opening Balance of the account
+            closing:
+              type: number
+              description: Closing Balance of the account
+            openingLedger:
+              type: number
+              description: Opening Ledger of the account
+            closingLedger:
+              type: number
+              description: Closing Ledger of the account
+            ledger:
+              type: number
+              description: Ledger
+            cleared:
+              type: number
+              description: Cleared
+        OpenApiAccountOwner:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Unique ID of the Account
+            provider:
+              type: string
+              description: Financial Institution Name
+            display_name:
+              type: string
+              description: Account Title/Name
+        OpenApiAccounts:
+          type: object
+          properties:
+            accounts:
+              type: array
+              description: Accounts Details
+              items:
+                $ref: '#/components/schemas/OpenApiAccount'
+        AccountId:
+          type: object
+          required:
+            - accountId
+            - bankCode
+            - currencyCode
+          properties:
+            accountId:
+              type: string
+              example: '22201111594'
+              description: Account Number
+            currencyCode:
+              example: INR
+              description: Account Currency
+              $ref: '#/components/schemas/CurrencyCode'
+            bankCode:
+              type: string
+              example: FTBLINBBXXX
+              description: Account Bank BIC
+        CurrencyCode:
+          type: object
+          properties:
+            isoCode:
+              type: string
+              example: EUR
+              description: ISO Code
+        DenominatedAmount:
+          type: object
+          required:
+            - amount
+            - currencyCode
+          properties:
+            currencyCode:
+              type: string
+              example: EUR
+              description: ISO Currency Code
+              minLength: 0
+              maxLength: 3
+            amount:
+              type: number
+              example: 12000.12
+              description: Amount in local currency units
+        OpenApiCreditDebitAdvice:
+          type: object
+          required:
+            - adviceType
+            - clientIdentifier
+            - groupId
+            - transactionCode
+          properties:
+            groupId:
+              type: string
+              example: INFXFFF
+              description: Internal SCB Identifier
+            accountIdentifier:
+              description: Account Details
+              $ref: '#/components/schemas/AccountId'
+            eventDate:
+              type: string
+              format: date
+              example: '2019-01-29'
+              description: Transaction Date
+            transactionIdentifier:
+              description: Transaction Details
+              $ref: '#/components/schemas/TransactionIdentifier'
+            adviceType:
+              type: string
+              example: credit
+              description: The type of advice - Credit or Debit
+              enum:
+                - Credit
+                - Debit
+            valueDate:
+              type: string
+              format: date
+              example: '2019-01-29'
+              description: Value Date
+            virtualAccountId:
+              type: string
+              example: '111111111111'
+              description: Virtual Account Number
+            transactionCode:
+              type: string
+              example: '716'
+              description: Transaction Code
+            baiCode:
+              type: string
+              example: '169'
+              description: BAI Code
+            transactionDescription:
+              type: string
+              example: Fund Transfer NEFT Inward -credit
+              description: Transaction Description
+            postExecutionBalance:
+              description: Post Execution Balance
+              $ref: '#/components/schemas/DenominatedAmount'
+            preExecutionBalance:
+              description: Pre Execution Balance
+              $ref: '#/components/schemas/DenominatedAmount'
+            transactionFreeText:
+              type: array
+              description: Transaction Narration 1
+              items:
+                type: string
+            transactionExtendedFreeText:
+              type: array
+              description: Transaction Narration 2
+              items:
+                type: string
+            transactionMultiLingualFreeText:
+              type: array
+              description: Transaction Narration 3
+              items:
+                type: string
+            transactionAmount:
+              description: Transaction Amount
+              $ref: '#/components/schemas/DenominatedAmount'
+            clientIdentifier:
+              description: Internal Transaction Reference
+              $ref: '#/components/schemas/TransactionIdentifier'
+            externalIdentifier:
+              description: Clearing Bank Reference
+              $ref: '#/components/schemas/TransactionIdentifier'
+            timestamp:
+              type: integer
+              format: int64
+              example: '2018-04-26T05:18:39.452Z'
+              description: Timestamp
+        TransactionIdentifier:
+          type: object
+          properties:
+            type:
+              type: string
+              example: BAI
+              description: Transaction Identifier Type
+              enum:
+                - BAI
+                - SWIFT
+                - Other
+            identifier:
+              type: string
+              example: '1111111111111111'
+              description: Transaction Identifier
+        OpenApiAccountAsOf:
+          type: object
+          properties:
+            type:
+              type: string
+              description: Balance Type
+              enum:
+                - Current
+                - Historical
+            date:
+              type: string
+              format: date
+              description: Balance Date
+        OpenApiAccountIdList:
+          type: object
+          properties:
+            asOf:
+              description: Balance Details
+              $ref: '#/components/schemas/OpenApiAccountAsOf'
+            accountIds:
+              type: array
+              description: Accounts Details
+              items:
+                type: string
