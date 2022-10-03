@@ -1,5 +1,11 @@
 apiVersion: backstage.io/v1alpha1
 kind: API
+metadata:
+  name: petstore
+  description: The petstore API
+  tags:
+    - store
+    - rest
 openapi: 3.0.1
 info:
   title: API Banking - Account Services
