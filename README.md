@@ -6,7 +6,7 @@ lorem ipsum..
 
 Food Menu, It will be lunch time soon,
 
-Here's the MEnu
+Here's the Menu
 
 * Biriyani
 * Aglio Oglio
