@@ -4,8 +4,8 @@ metadata:
   name: Finance
   description: The Finance API
   tags:
-    - IDP
-    - API_fintech
+    - idp
+    - api
   links:
     - url: https://github.com/swagger-api/swagger-Fintech
       title: GitHub Repo
