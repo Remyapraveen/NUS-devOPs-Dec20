@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: Blueconnector_Corp
+  description: A collection of all Devportal Example Groups in an organisation
+spec:
+  targets:
+    - ./org.yaml
